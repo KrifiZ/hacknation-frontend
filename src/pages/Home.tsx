@@ -27,7 +27,7 @@ export function Home() {
           <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
             Build amazing things with React and Tailwind CSS. Start your journey today!
           </p>
-          
+
           {/* Counter Card */}
           <div className="bg-white/20 backdrop-blur-md rounded-2xl p-8 max-w-md mx-auto mb-12 border border-white/30">
             <p className="text-white/70 mb-4">Interactive Counter</p>
@@ -43,7 +43,7 @@ export function Home() {
                 onClick={() => setCount(count + 1)}
                 className="px-6 py-3 bg-white hover:bg-white/90 text-purple-600 rounded-lg transition-all duration-200 font-semibold"
               >
-                Increase
+                Increase check
               </button>
             </div>
           </div>
