@@ -3,8 +3,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
 const loginSchema = z.object({
-  email: z.string().min(1, 'Email is required').email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  email: z.string().min(1, 'Email jest wymagany').email('Nieprawidłowy adres email'),
+  password: z.string().min(8, 'Hasło musi mieć co najmniej 8 znaków'),
 })
 
 type LoginFormData = z.infer<typeof loginSchema>
@@ -16,6 +16,7 @@ export function LoginForm() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    mode: 'onChange',
   })
 
   const onSubmit = async (data: LoginFormData) => {
