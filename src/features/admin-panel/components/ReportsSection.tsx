@@ -24,7 +24,7 @@ export const ReportsSection = ({ departments }: ReportsSectionProps) => {
   const [statusFilter, setStatusFilter] = useState<BudgetStatus | "all">("all");
   const [stageFilter, setStageFilter] = useState<StageKey | "all">("all");
   const [messages, setMessages] = useState<Record<string, Message[]>>(mockMessages);
-  const [actionModal, setActionModal] = useState<{ type: BBFActionType; deptId: string } | null>(null);
+  const [showActionModal, setShowActionModal] = useState(false);
 
   const filtered = departments.filter(d => {
     if (statusFilter !== "all" && d.reportStatus !== statusFilter) return false;
@@ -70,16 +70,22 @@ export const ReportsSection = ({ departments }: ReportsSectionProps) => {
     return fields.map(f => fieldNames[f]).join(", ");
   };
 
-  // Handle BBF action
-  const handleBBFAction = (type: BBFActionType) => {
-    if (selectedDept) {
-      setActionModal({ type, deptId: selectedDept });
-    }
+  // Handle opening BBF action modal
+  const handleOpenActionModal = () => {
+    setShowActionModal(true);
   };
 
-  // Submit BBF action
-  const handleSubmitAction = (data: { content: string; deadline?: string; attachmentUrl?: string }) => {
-    if (!actionModal || !selectedDept) return;
+  // Submit BBF action with selected action types
+  const handleSubmitAction = (data: { 
+    content: string; 
+    deadline?: string; 
+    attachmentFile?: File;
+    actionTypes: BBFActionType[];
+  }) => {
+    if (!selectedDept) return;
+
+    const hasExtendDeadline = data.actionTypes.includes("extend_deadline");
+    const hasLimitSheet = data.actionTypes.includes("limit_sheet");
 
     const newMessage: Message = {
       id: `new-${Date.now()}`,
@@ -88,10 +94,10 @@ export const ReportsSection = ({ departments }: ReportsSectionProps) => {
       timestamp: new Date().toISOString().slice(0, 16).replace("T", " "),
       stage: CURRENT_STAGE,
       deadline: data.deadline,
-      isDeadlineExtension: actionModal.type === "extend_deadline",
-      isLimitSheet: actionModal.type === "limit_sheet",
-      attachments: actionModal.type === "limit_sheet" && data.attachmentUrl ? [
-        { name: "Nowe limity MF", url: data.attachmentUrl, type: "limit_sheet" }
+      isDeadlineExtension: hasExtendDeadline,
+      isLimitSheet: hasLimitSheet,
+      attachments: hasLimitSheet && data.attachmentFile ? [
+        { name: data.attachmentFile.name, url: URL.createObjectURL(data.attachmentFile), type: "limit_sheet" }
       ] : undefined
     };
 
@@ -100,7 +106,7 @@ export const ReportsSection = ({ departments }: ReportsSectionProps) => {
       [selectedDept]: [...(prev[selectedDept] || []), newMessage]
     }));
 
-    setActionModal(null);
+    setShowActionModal(false);
   };
 
   return (
@@ -383,8 +389,7 @@ export const ReportsSection = ({ departments }: ReportsSectionProps) => {
                       Oczekuje na odpowiedź BBF
                     </div>
                     <BBFActionButton 
-                      onAction={handleBBFAction}
-                      canSendLimitSheet={canSendLimitSheet}
+                      onOpenModal={handleOpenActionModal}
                     />
                   </div>
                 </div>
@@ -403,12 +408,13 @@ export const ReportsSection = ({ departments }: ReportsSectionProps) => {
       </div>
 
       {/* Action Modal */}
-      {actionModal && selectedDept && (
+      {showActionModal && selectedDept && (
         <BBFActionModal
-          type={actionModal.type}
           departmentName={departments.find(d => d.id === selectedDept)?.name || ""}
-          onClose={() => setActionModal(null)}
+          onClose={() => setShowActionModal(false)}
           onSubmit={handleSubmitAction}
+          canSendLimitSheet={canSendLimitSheet}
+          currentDeadline={getDepartmentDeadline(selectedDept, CURRENT_STAGE)}
         />
       )}
     </div>
