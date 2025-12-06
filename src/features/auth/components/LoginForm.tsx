@@ -1,6 +1,8 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useAuth } from '../hooks'
+import type { UserRole } from '../types'
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Email jest wymagany').email('Nieprawidłowy adres email'),
@@ -9,7 +11,14 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>
 
+const demoAccounts: { label: string; role: UserRole }[] = [
+  { label: 'User', role: 'user' },
+  { label: 'Admin', role: 'admin' },
+  { label: 'BBF', role: 'bbf' },
+]
+
 export function LoginForm() {
+  const { login, isLoading } = useAuth()
   const {
     register,
     handleSubmit,
@@ -24,11 +33,33 @@ export function LoginForm() {
     // TODO: Implement login logic
   }
 
+  const handleDemoLogin = (role: UserRole) => {
+    login(role)
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="bg-white rounded-lg p-8 w-full max-w-md border border-gray-200 shadow-sm">
         <h2 className="text-2xl font-bold text-gray-800 text-center mb-2">Logowanie</h2>
-        <p className="text-gray-500 text-center mb-8">System planowania budżetu</p>
+        <p className="text-gray-500 text-center mb-6">System planowania budżetu</p>
+
+        {/* Demo Test Accounts */}
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <p className="text-sm text-gray-600 mb-3 text-center font-medium">Konta testowe</p>
+          <div className="flex gap-2 justify-center">
+            {demoAccounts.map(({ label, role }) => (
+              <button
+                key={role}
+                type="button"
+                onClick={() => handleDemoLogin(role)}
+                disabled={isLoading}
+                className="px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md transition disabled:opacity-50"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
