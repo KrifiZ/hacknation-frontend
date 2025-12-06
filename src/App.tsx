@@ -1,5 +1,4 @@
 import { Routes, Route } from 'react-router'
-import { Home, About, Contact } from './pages'
 import { BBFAdminPage } from './pages/BBFPage'
 import { Home, About, Contact, Departament, DepartamentItems, DepartamentItem } from './pages'
 

@@ -64,14 +64,14 @@ export const BBFActionModal = ({
     (!extendDeadline || deadline);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
-        <div className="p-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800">Dodaj akcję BBF</h3>
-          <p className="text-sm text-gray-500">Do: {departmentName}</p>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 sm:p-6">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="p-3 sm:p-4 border-b border-gray-200 flex-shrink-0">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800">Dodaj akcję BBF</h3>
+          <p className="text-xs sm:text-sm text-gray-500">Do: {departmentName}</p>
         </div>
         
-        <div className="p-4 space-y-4">
+        <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 overflow-y-auto flex-1">
           {/* Deadline warning - shown when deadline is reached and not fixed */}
           {showDeadlineWarning && (
             <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -215,7 +215,7 @@ export const BBFActionModal = ({
           )}
         </div>
 
-        <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
+        <div className="p-3 sm:p-4 border-t border-gray-200 flex justify-end gap-2 flex-shrink-0">
           <button
             onClick={onClose}
             className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition"
