@@ -28,7 +28,7 @@ export function LoginForm() {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="bg-white rounded-lg p-8 w-full max-w-md border border-gray-200 shadow-sm">
         <h2 className="text-2xl font-bold text-gray-800 text-center mb-2">Logowanie</h2>
-        <p className="text-gray-500 text-center mb-8">Panel Administracyjny BBF</p>
+        <p className="text-gray-500 text-center mb-8">System planowania budżetu</p>
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
