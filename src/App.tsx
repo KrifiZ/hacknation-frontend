@@ -1,13 +1,13 @@
-import { Routes, Route } from 'react-router'
+import { Routes, Route, Navigate } from 'react-router'
 import { BBFAdminPage } from './pages/BBFPage'
-import { Home, About, Contact, Departament, DepartamentItems, DepartamentItem, NotFound } from './pages'
+import { Departament, DepartamentItems, DepartamentItem, NotFound } from './pages'
+import { LoginForm } from './features/auth/components'
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/contact" element={<Contact />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/login" element={<LoginForm />} />
       <Route path="/bbf-admin" element={<BBFAdminPage />} />
       <Route path="/department" element={<Departament />} />
       <Route path="/department/items" element={<DepartamentItems />} />
