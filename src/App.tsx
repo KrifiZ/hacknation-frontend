@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router'
 import { BBFAdminPage } from './pages/BBFPage'
-import { Home, About, Contact, Departament, DepartamentItems, DepartamentItem } from './pages'
+import { Home, About, Contact, Departament, DepartamentItems, DepartamentItem, NotFound } from './pages'
 
 function App() {
   return (
@@ -12,9 +12,9 @@ function App() {
       <Route path="/department" element={<Departament />} />
       <Route path="/department/items" element={<DepartamentItems />} />
       <Route path="/department/items/item" element={<DepartamentItem />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }
 
 export default App
-
