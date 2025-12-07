@@ -12,6 +12,7 @@ interface ConversationPanelProps {
   currentStage: StageKey;
   stageFilter: StageKey | "all";
   canAddBBFAction: boolean;
+  isTyping?: boolean;
   onStageFilterChange: (stage: StageKey | "all") => void;
   onOpenActionModal: () => void;
   getDepartmentDeadline: (deptId: string, stage: StageKey) => string | null;
@@ -26,6 +27,7 @@ export const ConversationPanel = ({
   currentStage,
   stageFilter,
   canAddBBFAction,
+  isTyping,
   onStageFilterChange,
   onOpenActionModal,
   getDepartmentDeadline,
@@ -114,7 +116,7 @@ export const ConversationPanel = ({
 
             {/* Messages */}
             <div className="space-y-3 flex-1 overflow-y-auto pr-2">
-              <MessageList messages={filteredMessages} stageFilter={stageFilter} />
+              <MessageList messages={filteredMessages} stageFilter={stageFilter} isTyping={isTyping} />
             </div>
 
             {/* BBF Action Button */}

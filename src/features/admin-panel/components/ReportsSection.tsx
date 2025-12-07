@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   stageDeadlines,
   CURRENT_STAGE,
@@ -23,6 +23,17 @@ export const ReportsSection = ({ departments }: ReportsSectionProps) => {
   const [stageFilter, setStageFilter] = useState<StageKey | "all">("all");
   const [messages, setMessages] = useState<Record<string, Message[]>>(mockMessages);
   const [showActionModal, setShowActionModal] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup typing timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const allMessages = selectedDept ? messages[selectedDept] || [] : [];
   const filteredMessages = stageFilter === "all" 
@@ -100,6 +111,9 @@ export const ReportsSection = ({ departments }: ReportsSectionProps) => {
     }));
 
     setShowActionModal(false);
+
+    // Show typing indicator after message is sent (endless)
+    setIsTyping(true);
   }, [selectedDept]);
 
   return (
@@ -126,6 +140,7 @@ export const ReportsSection = ({ departments }: ReportsSectionProps) => {
         currentStage={CURRENT_STAGE}
         stageFilter={stageFilter}
         canAddBBFAction={canAddBBFAction}
+        isTyping={isTyping}
         onStageFilterChange={handleStageFilterChange}
         onOpenActionModal={handleOpenActionModal}
         getDepartmentDeadline={getDepartmentDeadline}
