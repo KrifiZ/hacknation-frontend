@@ -117,7 +117,7 @@ export const ReportsSection = ({ departments }: ReportsSectionProps) => {
   }, [selectedDept]);
 
   return (
-    <div className="grid grid-cols-12 gap-4">
+    <div className="grid grid-cols-12 gap-4 h-[calc(100vh-50px)]">
       {/* Department List */}
       <DepartmentList
         departments={departments}
