@@ -8,54 +8,61 @@ import 'handsontable/styles/ht-theme-horizon.css';
 import Handsontable from 'handsontable/base';
 import { registerAllModules } from 'handsontable/registry';
 import { HotTable } from '@handsontable/react-wrapper';
+import type { HotTableRef } from '@handsontable/react-wrapper'
 
 import { DataColumns } from './view-model/data-grid-view.model'
 import { useEffect, useRef, useState } from 'react';
-
+import { useMutation } from '@tanstack/react-query';
+import { getDepartmentItems, postEmptyRow, putRow } from '../../shared/utils/api';
+import { DepartamentPipe } from '../../shared/utils/pipes/departament.pipe';
 
 registerAllModules();
 
-const pickOne = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
-const randInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+// const pickOne = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
+// const randInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-function generateDummyRow(rowIndex: number): Handsontable.CellValue[] {
-  return DataColumns.map((c, colIndex) => {
-    if (c.type === 'numeric') {
-      const bigAmount = /(Kwota|Potrzeby|Limit)/i.test(c.header);
-      return bigAmount ? randInt(10_000, 5_000_000) : randInt(1, 999);
-    }
+// function generateDummyRow(rowIndex: number): Handsontable.CellValue[] {
+//   return DataColumns.map((c, colIndex) => {
+//     if (c.type === 'numeric') {
+//       const bigAmount = /(Kwota|Potrzeby|Limit)/i.test(c.header);
+//       return bigAmount ? randInt(10_000, 5_000_000) : randInt(1, 999);
+//     }
 
-    // Text columns with light heuristics by header
-    if (c.header === 'Grupa wydatków') return pickOne(['Inwestycje', 'Operacyjne', 'Utrzymanie', 'Inne']);
-    if (c.header.startsWith('Budżet zadaniowy')) return pickOne(['F1-Z1', 'F2-Z3', 'F3-Z2', 'F4-Z4']);
-    if (c.header === 'Nazwa programu/projektu') return `Projekt ${rowIndex + 1}`;
-    if (c.header === 'Nazwa komórki organizacyjnej') return pickOne(['Biuro IT', 'Wydział A', 'Wydział B', 'Zespół Analiz']);
-    if (c.header === 'Plan WI') return `Plan WI ${2026 + (rowIndex % 4)}`;
-    if (c.header === 'Dysponent środków') return pickOne(['MC', 'COI', 'KPRM']);
-    if (c.header === 'Budżet') return pickOne(['Centralny', 'Zadaniowy', 'Jednostkowy']);
-    if (c.header === 'Nazwa zadania') return `Zadanie ${rowIndex + 1}`;
-    if (c.header.startsWith('Szczegółowe uzasadnienie')) return `Uzasadnienie dla zadania ${rowIndex + 1}`;
-    if (c.header.includes('Nr umowy')) return `UM/${2026 + (rowIndex % 4)}/${randInt(100, 999)}`;
-    if (c.header.startsWith('W przypadku dotacji')) return pickOne(['Firma X', 'Instytut Y', 'Stowarzyszenie Z']);
-    if (c.header === 'Podstawa prawna udzielenia dotacji') return pickOne(['Ustawa ABC art. 10', 'Uchwała 12/2025', 'Rozporządzenie XYZ']);
-    if (c.header === 'Uwagi') return pickOne(['', 'Do weryfikacji', 'Pilne', '']);
+//     if (c.header === 'Grupa wydatków') return pickOne(['Inwestycje', 'Operacyjne', 'Utrzymanie', 'Inne']);
+//     if (c.header.startsWith('Budżet zadaniowy')) return pickOne(['F1-Z1', 'F2-Z3', 'F3-Z2', 'F4-Z4']);
+//     if (c.header === 'Nazwa programu/projektu') return `Projekt ${rowIndex + 1}`;
+//     if (c.header === 'Nazwa komórki organizacyjnej') return pickOne(['Biuro IT', 'Wydział A', 'Wydział B', 'Zespół Analiz']);
+//     if (c.header === 'Plan WI') return `Plan WI ${2026 + (rowIndex % 4)}`;
+//     if (c.header === 'Dysponent środków') return pickOne(['MC', 'COI', 'KPRM']);
+//     if (c.header === 'Budżet') return pickOne(['Centralny', 'Zadaniowy', 'Jednostkowy']);
+//     if (c.header === 'Nazwa zadania') return `Zadanie ${rowIndex + 1}`;
+//     if (c.header.startsWith('Szczegółowe uzasadnienie')) return `Uzasadnienie dla zadania ${rowIndex + 1}`;
+//     if (c.header.includes('Nr umowy')) return `UM/${2026 + (rowIndex % 4)}/${randInt(100, 999)}`;
+//     if (c.header.startsWith('W przypadku dotacji')) return pickOne(['Firma X', 'Instytut Y', 'Stowarzyszenie Z']);
+//     if (c.header === 'Podstawa prawna udzielenia dotacji') return pickOne(['Ustawa ABC art. 10', 'Uchwała 12/2025', 'Rozporządzenie XYZ']);
+//     if (c.header === 'Uwagi') return pickOne(['', 'Do weryfikacji', 'Pilne', '']);
 
-    return `Tekst ${rowIndex + 1}.${colIndex + 1}`;
-  });
-}
+//     return `Tekst ${rowIndex + 1}.${colIndex + 1}`;
+//   });
+// }
 
-export function DataGridComponent({ canEdit=true }: { canEdit?: boolean }) {
-  const tableRef = useRef(null);
+export function DataGridComponent({ canEdit=true, dataRows }: { canEdit?: boolean, dataRows?: Handsontable.CellValue[][] }) {
+  const tableRef = useRef<HotTableRef | null>(null);
+  const deptId = '1';
+  const dept = '1';
 
-  const [data, setData] = useState<Handsontable.CellValue[][]>(() => {
-    return Array.from({ length: 8 }, (_, i) => generateDummyRow(i));
-  });
-  const [fixedColumns, setFixedColumns] = useState(3);
+  const [gridData, _setData] = useState<Handsontable.CellValue[][]>(dataRows ?? []);
+  const [fixedColumns, setFixedColumns] = useState(4);
+  // const [rowIndex, setRowIndex] = useState(0);
+
+  const res = useMutation({mutationFn: () => postEmptyRow(dept)})
+  const post = useMutation({mutationFn: putRow})
+  const reloadData = useMutation({mutationFn: () => getDepartmentItems(deptId)})
 
   useEffect(() => {
     const a = () => {
-      setFixedColumns(window.innerWidth < 1280 ? 0 : 3);
-      const hot = tableRef.current?.hotInstance;
+      setFixedColumns(window.innerWidth < 1280 ? 0 : 4);
+      const hot = tableRef.current?.hotInstance as Handsontable | undefined;
       hot?.updateSettings({
         fixedColumnsStart: fixedColumns
       })
@@ -66,8 +73,15 @@ export function DataGridComponent({ canEdit=true }: { canEdit?: boolean }) {
     }
   })
 
+  useEffect(() => {
+    if (tableRef.current) {
+      const hot = tableRef.current?.hotInstance as Handsontable | undefined;
+      hot?.render()
+    }
+  }, [dataRows])
+
   const buttonClickCallback = () => {
-    const hot = tableRef.current?.hotInstance;
+    const hot = tableRef.current?.hotInstance as Handsontable | undefined;
     const exportPlugin = hot?.getPlugin('exportFile');
 
     exportPlugin?.downloadFile('csv', {
@@ -84,27 +98,53 @@ export function DataGridComponent({ canEdit=true }: { canEdit?: boolean }) {
     });
   };
 
+  const send = (rowId: number) => {
+    const hot = tableRef.current?.hotInstance as Handsontable | undefined;
+    const rowData = hot?.getDataAtRow(rowId);
+    post.mutate({rowData: rowData || [], rowId});
+    
+    reloadData.mutateAsync().then((newData) => {
+      if (newData) {
+        console.log("NEW DATA\n", newData);
+        _setData(DepartamentPipe(newData));
+        hot?.loadData(gridData);
+      }
+    }).catch((err) => {
+      console.log(err);
+    });
+    setTimeout(() => {}, 1500);
+    hot?.render();
+  }
+
   const addRow = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const hot = tableRef.current?.hotInstance as Handsontable | undefined;
     e.preventDefault();
-    console.log('Trying row');
-    if (data[data.length - 1].every((cell) => cell === '')) {
-      return;
-    }
-    console.log('Success row');
-    setData([...data, Array(DataColumns.length).fill('')]);
+    // if(gridData) {
+    //   setRowIndex(gridData.length);
+    // }
+    res.mutate();
+    reloadData.mutateAsync().then((newData) => {
+      if (newData) {
+        console.log("NEW DATA\n", newData);
+        _setData(DepartamentPipe(newData));
+        hot?.render();
+      }
+    }).catch((err) => {
+      console.log(err);
+    });
   }
 
   return (
     <div className='data-grid m-2 p-2 border-gray-200 border-2 bg-gray-50 flex flex-col space-y-2 rounded-xl'>
       <div className="">
         <button className='border-2 border-gray-300 p-2 bg-gray-100 rounded-md cursor-pointer hover:opacity-80' onClick={() => buttonClickCallback()}>
-          Export to CSV
+          Eksportuj
         </button>
       </div>
       <HotTable
         ref={tableRef}
         themeName="ht-theme-main"
-        data={data}
+        data={gridData}
         colHeaders = {DataColumns.map(c => c.header)}
         rowHeaders={false}
         height="auto"
@@ -156,10 +196,31 @@ export function DataGridComponent({ canEdit=true }: { canEdit?: boolean }) {
         //     } : undefined
         //   }
         // ))}
-        afterValidate={isValid => {
-          if (isValid) {
-            console.log('Sent')
-          }
+        afterChange={(changes) => {
+          // const hot = tableRef.current?.hotInstance as Handsontable | undefined;
+          console.log("CHANGES\n", changes);
+          if(changes) send(changes[0][0]);
+        }}
+        afterValidate={() => {
+          // clearInterval()
+        }}
+        afterBeginEditing={(row, column) => {
+          setInterval(() => {
+
+          }, 2000)
+          console.log(row, column)
+          // if (tableRef.current) {
+          //   const hot = tableRef.current?.hotInstance as Handsontable | undefined
+          //   hot?.deselectCell()
+          //   type CellMeta = { readOnly?: boolean }
+          //   const dedisable = (hot?.getCellsMeta() ?? []) as CellMeta[]
+          //   console.log(dedisable)
+          //   dedisable.forEach((cell) => { cell.readOnly = false })
+          //   const cellMetaAtRow = (hot?.getCellMetaAtRow(row) ?? []) as CellMeta[]
+          //   console.log(cellMetaAtRow)
+          //   cellMetaAtRow.forEach((cell) => { cell.readOnly = true })
+          //   hot?.render();
+          // }
         }}
         licenseKey="non-commercial-and-evaluation"
       />
