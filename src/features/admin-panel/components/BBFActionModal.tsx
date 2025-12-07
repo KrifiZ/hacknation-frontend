@@ -61,7 +61,8 @@ export const BBFActionModal = ({
 
   const canSubmit = 
     content.trim() && 
-    (!extendDeadline || deadline);
+    (!extendDeadline || deadline) &&
+    (!sendLimitSheet || attachmentFile);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 sm:p-6">
@@ -168,7 +169,7 @@ export const BBFActionModal = ({
           {sendLimitSheet && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Plik z limitami (PDF)
+                Plik z limitami (PDF) <span className="text-red-500">*</span>
               </label>
               {attachmentFile ? (
                 <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
