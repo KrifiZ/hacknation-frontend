@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router'
 import { BBFAdminPage } from './pages/BBFPage'
+
 import { Home, About, Contact, Departament, DepartamentItems, DepartamentItem } from './pages'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 
@@ -18,8 +19,5 @@ function App() {
         <Route path="/department/items/item" element={<DepartamentItem />} />
       </Routes>
     </QueryClientProvider>
-  )
-}
 
 export default App
-
