@@ -36,10 +36,10 @@ export const ConversationPanel = ({
   const selectedDepartment = departments.find((d) => d.id === selectedDept);
 
   return (
-    <div className="col-span-9">
-      <div className="bg-white rounded-lg border border-gray-200 h-full flex flex-col">
+    <div className="col-span-9 h-full overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 h-full flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-4 border-b border-gray-200 bg-gray-50">
+        <div className="p-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
           <div className="flex justify-between items-start">
             <div>
               <h2 className="text-lg font-semibold text-gray-800">
@@ -56,7 +56,7 @@ export const ConversationPanel = ({
 
         {/* Stage Filter Buttons */}
         {selectedDept && departmentStages.length > 0 && (
-          <div className="p-3 border-b border-gray-100 bg-gray-50">
+          <div className="p-3 border-b border-gray-100 bg-gray-50 flex-shrink-0">
             <div className="flex items-center gap-2">
               <span className="text-xs text-gray-500 font-medium">Filtruj po stage:</span>
               <div className="flex flex-wrap gap-1">
@@ -89,7 +89,7 @@ export const ConversationPanel = ({
         )}
 
         {selectedDept ? (
-          <div className="p-4 flex-1 overflow-hidden flex flex-col">
+          <div className="p-4 flex-1 overflow-hidden flex flex-col min-h-0">
             {/* Stage Timeline */}
             <StageTimeline
               currentStage={currentStage}
@@ -115,7 +115,7 @@ export const ConversationPanel = ({
             </div>
 
             {/* Messages */}
-            <div className="space-y-3 flex-1 overflow-y-auto pr-2">
+            <div className="space-y-3 flex-1 overflow-y-auto pr-2 min-h-0">
               <MessageList messages={filteredMessages} stageFilter={stageFilter} isTyping={isTyping} />
             </div>
 

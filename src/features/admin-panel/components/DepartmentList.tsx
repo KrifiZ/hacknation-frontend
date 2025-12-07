@@ -30,10 +30,10 @@ export const DepartmentList = ({
   });
 
   return (
-    <div className="col-span-3 space-y-4">
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <h2 className="text-lg font-semibold text-gray-800 mb-3">Komórki</h2>
-        <div className="flex flex-wrap gap-1 mb-4">
+    <div className="col-span-3 h-full overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex flex-col overflow-hidden">
+        <h2 className="text-lg font-semibold text-gray-800 mb-3 flex-shrink-0">Komórki</h2>
+        <div className="flex flex-wrap gap-1 mb-4 flex-shrink-0">
           {(["all", "approved", "not_approved", "not_sent"] as const).map((status) => (
             <button
               key={status}
@@ -54,7 +54,7 @@ export const DepartmentList = ({
             </button>
           ))}
         </div>
-        <div className="space-y-1 max-h-[500px] overflow-y-auto">
+        <div className="space-y-1 flex-1 overflow-y-auto min-h-0">
           {filtered.map((dept) => {
             const deadline = getDepartmentDeadline(dept.id, currentStage);
             const hasExtension = hasExtendedDeadline(dept.id, currentStage);
