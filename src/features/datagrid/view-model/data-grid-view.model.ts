@@ -1,5 +1,9 @@
 export const DataColumns = [
     {
+        header: 'ID',
+        type: 'numeric'
+    },
+    {
         header: 'Część budżetowa',
         type: 'numeric'
     },
