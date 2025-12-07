@@ -35,7 +35,7 @@ export function LoginForm() {
   useEffect(() => {
     if (isAuthenticated && role) {
       if (role === 'user' || role === 'admin') {
-        navigate('/department/items')
+        navigate('/department')
       } else {
         navigate('/bbf-admin')
       }

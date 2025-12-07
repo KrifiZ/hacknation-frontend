@@ -4,9 +4,10 @@ import { AttachmentLink } from "./AttachmentLink";
 interface MessageListProps {
   messages: Message[];
   stageFilter: StageKey | "all";
+  isTyping?: boolean;
 }
 
-export const MessageList = ({ messages, stageFilter }: MessageListProps) => {
+export const MessageList = ({ messages, stageFilter, isTyping }: MessageListProps) => {
   if (messages.length === 0) {
     return (
       <div className="text-center py-12 text-gray-400">
@@ -105,6 +106,23 @@ export const MessageList = ({ messages, stageFilter }: MessageListProps) => {
           </div>
         );
       })}
+
+      {/* Typing indicator */}
+      {isTyping && (
+        <div className="p-3 rounded-lg bg-gray-50 border border-gray-200 mr-12">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-gray-600">Komórka</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-gray-400">pisze</span>
+              <div className="flex gap-1">
+                <span className="w-2.5 h-2.5 bg-gray-400 rounded-full animate-[bounce_1s_infinite]" style={{ animationDelay: '0ms' }}></span>
+                <span className="w-2.5 h-2.5 bg-gray-400 rounded-full animate-[bounce_1s_infinite]" style={{ animationDelay: '200ms' }}></span>
+                <span className="w-2.5 h-2.5 bg-gray-400 rounded-full animate-[bounce_1s_infinite]" style={{ animationDelay: '400ms' }}></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
