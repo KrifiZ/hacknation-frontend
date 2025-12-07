@@ -1,5 +1,32 @@
-import { createContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useState, useCallback, useEffect, type ReactNode } from 'react'
 import type { AuthContextType, UserRole } from '../types'
+
+const AUTH_STORAGE_KEY = 'auth_state'
+
+interface StoredAuthState {
+  isAuthenticated: boolean
+  role: UserRole | null
+}
+
+function getStoredAuth(): StoredAuthState {
+  try {
+    const stored = localStorage.getItem(AUTH_STORAGE_KEY)
+    if (stored) {
+      return JSON.parse(stored)
+    }
+  } catch {
+    // Ignore parsing errors
+  }
+  return { isAuthenticated: false, role: null }
+}
+
+function setStoredAuth(state: StoredAuthState) {
+  localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(state))
+}
+
+function clearStoredAuth() {
+  localStorage.removeItem(AUTH_STORAGE_KEY)
+}
 
 export const AuthContext = createContext<AuthContextType | null>(null)
 
@@ -9,8 +36,9 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [role, setRole] = useState<UserRole | null>(null)
+  const storedAuth = getStoredAuth()
+  const [isAuthenticated, setIsAuthenticated] = useState(storedAuth.isAuthenticated)
+  const [role, setRole] = useState<UserRole | null>(storedAuth.role)
 
   const login = useCallback((userRole: UserRole) => {
     setIsLoading(true)
@@ -18,6 +46,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setTimeout(() => {
       setIsAuthenticated(true)
       setRole(userRole)
+      setStoredAuth({ isAuthenticated: true, role: userRole })
       setIsLoading(false)
     }, 500)
   }, [])
@@ -25,6 +54,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = useCallback(() => {
     setIsAuthenticated(false)
     setRole(null)
+    clearStoredAuth()
   }, [])
 
   return (
