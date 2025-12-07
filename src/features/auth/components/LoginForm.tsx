@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -18,7 +20,8 @@ const demoAccounts: { label: string; role: UserRole }[] = [
 ]
 
 export function LoginForm() {
-  const { login, isLoading } = useAuth()
+  const navigate = useNavigate()
+  const { login, isLoading, isAuthenticated, role } = useAuth()
   const {
     register,
     handleSubmit,
@@ -28,13 +31,24 @@ export function LoginForm() {
     mode: 'onChange',
   })
 
+  // Redirect after successful login based on role
+  useEffect(() => {
+    if (isAuthenticated && role) {
+      if (role === 'user' || role === 'admin') {
+        navigate('/department/items')
+      } else {
+        navigate('/bbf-admin')
+      }
+    }
+  }, [isAuthenticated, role, navigate])
+
   const onSubmit = async (data: LoginFormData) => {
     console.log('Login data:', data)
     // TODO: Implement login logic
   }
 
-  const handleDemoLogin = (role: UserRole) => {
-    login(role)
+  const handleDemoLogin = (userRole: UserRole) => {
+    login(userRole)
   }
 
   return (

@@ -3,6 +3,7 @@ import { AuthProvider } from './features/auth/context/index.tsx'
 import { BBFAdminPage } from './pages/BBFPage'
 import { Departament, DepartamentItems, DepartamentItem, NotFound } from './pages'
 import { LoginForm } from './features/auth/components'
+import { MainLayout } from './shared/components/layout'
 import { ErrorBoundary, ErrorFallback } from './shared/utils'
 
 function App() {
@@ -15,17 +16,22 @@ function App() {
         />
       }
     >
-      {/* <AuthProvider> */}
+      <AuthProvider>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<LoginForm />} />
-          <Route path="/bbf-admin" element={<BBFAdminPage />} />
-          <Route path="/department" element={<Departament />} />
-          <Route path="/department/items" element={<DepartamentItems />} />
-          <Route path="/department/items/item" element={<DepartamentItem />} />
+          
+          {/* Protected routes with layout */}
+          <Route element={<MainLayout />}>
+            <Route path="/bbf-admin" element={<BBFAdminPage />} />
+            <Route path="/department" element={<Departament />} />
+            <Route path="/department/items" element={<DepartamentItems />} />
+            <Route path="/department/items/item" element={<DepartamentItem />} />
+          </Route>
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
-      {/* </AuthProvider> */}
+      </AuthProvider>
     </ErrorBoundary>
   )
 }
