@@ -98,22 +98,27 @@ export function DataGridComponent({ canEdit=true, dataRows }: { canEdit?: boolea
     });
   };
 
+  useEffect(() => {
+
+  }, [])
+
   const send = (rowId: number) => {
     const hot = tableRef.current?.hotInstance as Handsontable | undefined;
     const rowData = hot?.getDataAtRow(rowId);
     post.mutate({rowData: rowData || [], rowId});
-    
-    reloadData.mutateAsync().then((newData) => {
-      if (newData) {
-        console.log("NEW DATA\n", newData);
-        _setData(DepartamentPipe(newData));
-        hot?.loadData(gridData);
-      }
-    }).catch((err) => {
-      console.log(err);
-    });
-    setTimeout(() => {}, 1500);
-    hot?.render();
+
+    setTimeout(() => {
+      reloadData.mutateAsync().then((newData) => {
+        if (newData) {
+          console.log("NEW DATA\n", newData);
+          _setData(DepartamentPipe(newData));
+          hot?.loadData(gridData);
+        }
+      }).catch((err) => {
+        console.log(err);
+      });
+      hot?.render();
+    }, 1500);
   }
 
   const addRow = (e: React.MouseEvent<HTMLButtonElement>) => {
